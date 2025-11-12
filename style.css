@@ -22,7 +22,7 @@ body {
 
 /* Estilo para el botón "No" que se va a mover y reducir */
 #btnNo {
-    position: absolute; /* Debe ser 'absolute' o 'fixed' para moverse libremente */
+    /* position: absolute; -- Removido para que se inicie en el flujo normal */
     /* Aplicamos transición suave para el movimiento y el tamaño (transform) */
     transition: transform 0.2s ease-out, background-color 0.1s; 
     z-index: 5;
