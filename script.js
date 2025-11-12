@@ -11,6 +11,8 @@ const SCALE_DECREMENT = 0.05; // Se reduce 5% con cada clic
 const MIN_SCALE = 0.5; // Escala mínima para que no desaparezca
 const SAFE_MARGIN = 40; // Margen de seguridad en píxeles para asegurar visibilidad
 
+let isButtonFixed = false; // Nueva bandera para saber si ya cambiamos la posición a fixed
+
 
 // --- Lógica del botón "Sí" ---
 function handleYes() {
@@ -31,6 +33,20 @@ function handleYes() {
 
 // --- Lógica del botón "No" que se mueve y encoge ---
 function moveNoButton() {
+    // ** PASO 1: Asegurar que el botón esté en posición fija en el primer clic **
+    if (!isButtonFixed) {
+        // Obtenemos la posición actual para que el movimiento sea suave
+        const currentRect = btnNo.getBoundingClientRect();
+        
+        // Lo convertimos a fixed en su posición actual para que parezca que no se ha movido.
+        btnNo.style.position = 'fixed';
+        btnNo.style.left = `${currentRect.left}px`;
+        btnNo.style.top = `${currentRect.top}px`;
+        
+        // Marcamos la bandera para que no vuelva a entrar aquí.
+        isButtonFixed = true;
+    }
+
     // 1. Obtener las dimensiones de la ventana
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
@@ -73,59 +89,21 @@ function moveNoButton() {
     // 5. Aplicar la nueva posición y la escala usando transform
     btnNo.style.left = `${newX}px`;
     btnNo.style.top = `${newY}px`;
-    btnNo.style.transform = `scale(${noScale})`; // Solo aplicamos la escala aquí
+    btnNo.style.transform = `scale(${noScale})`; // Aplicamos la escala aquí
 
     // 6. El texto de la pregunta NO se modifica.
 }
 
-
-// Función para inicializar el botón en una posición fija y visible
-function initializeButtonPosition() {
-    // 1. Asegurar que la posición sea fija para el movimiento en el viewport
-    btnNo.style.position = 'fixed'; 
-
-    const btnSiRect = document.getElementById('btnSi').getBoundingClientRect();
-    
-    // Si el botón "Sí" no tiene dimensiones calculadas, usamos una posición de fallback visible.
-    if (btnSiRect.width === 0 || btnSiRect.height === 0) {
-        console.warn('El botón "Sí" aún no tiene dimensiones. Colocando el botón "No" en el centro para visibilidad de fallback.');
-        
-        // Fallback: Colocar el botón "No" en una posición garantizada (parte inferior central)
-        btnNo.style.left = '50%';
-        btnNo.style.top = '70%';
-        // Usamos translate(-50%, -50%) para centrarlo completamente cuando usamos % en left/top
-        btnNo.style.transform = `translate(-50%, -50%) scale(${noScale})`; 
-        
-        // Hacerlo visible antes de salir del fallback
-        btnNo.classList.remove('hidden');
-        return;
-    }
-    
-    // Lógica de cálculo original (si las dimensiones son válidas)
-    // Calcular posición inicial justo a la derecha del botón "Sí"
-    const initialX = btnSiRect.right + 20; // 20px a la derecha del botón "Sí"
-    const initialY = btnSiRect.top; // A la misma altura que el botón "Sí"
-    
-    // Aplicar la posición inicial
-    btnNo.style.left = `${initialX}px`;
-    btnNo.style.top = `${initialY}px`;
-    btnNo.style.transform = `scale(${noScale})`; 
-
-    // Hacerlo visible
-    btnNo.classList.remove('hidden'); 
-}
-
-
-// Inicializar el botón cuando la ventana haya cargado completamente (incluyendo layout y recursos)
-window.onload = () => {
-    // Usamos un pequeño retraso para asegurar que todos los elementos CSS y el layout estén finalizados
-    setTimeout(initializeButtonPosition, 50); 
-};
+// ASIGNACIÓN DE EVENTO (Sustituye a window.onload y al onclick en HTML)
+document.addEventListener('DOMContentLoaded', () => {
+    // Asignamos el evento al botón "No"
+    btnNo.addEventListener('click', moveNoButton);
+});
 
 // Escuchar el evento de redimensionamiento de la ventana para recalcular la posición
 window.addEventListener('resize', () => {
-    if (!btnNo.classList.contains('hidden')) {
-        // Si la ventana cambia de tamaño, forzamos al botón "No" a saltar a una nueva posición válida
-        moveNoButton(); 
+    // Si el botón ya ha sido activado y está en modo fijo, lo movemos a una nueva posición segura
+    if (isButtonFixed && !btnNo.classList.contains('hidden')) {
+        moveNoButton();
     }
 });
