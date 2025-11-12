@@ -1,0 +1,54 @@
+/* Estilos base de la página */
+body {
+    background-color: #f8fafc; /* Color de fondo muy claro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden; /* Evita barras de desplazamiento cuando el botón "No" se mueve */
+}
+
+.card {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 1rem; /* Esquinas redondeadas */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    z-index: 10; /* Asegura que la tarjeta esté encima del botón de "No" */
+}
+
+/* Estilo para el botón "No" que se va a mover y reducir */
+#btnNo {
+    position: absolute; /* Debe ser 'absolute' o 'fixed' para moverse libremente */
+    /* Aplicamos transición suave para el movimiento y el tamaño (transform) */
+    transition: transform 0.2s ease-out, background-color 0.1s; 
+    z-index: 5;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px; /* Botón súper redondeado */
+    font-weight: 600;
+    color: white;
+    background-color: #f44336; /* Rojo */
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+}
+
+#btnNo:hover {
+    background-color: #e53935; /* Un poco más oscuro al pasar el ratón */
+}
+
+/* Oculta el botón cuando se acepta el "Sí" */
+#btnNo.hidden {
+    display: none;
+}
+
+/* Estilo para el mensaje final de respuesta "Sí" */
+.respuesta-si {
+    color: #d81b60; /* Un tono rosa de amor */
+    font-size: 1.5rem;
+    font-weight: 700;
+}
