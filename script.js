@@ -78,13 +78,30 @@ function moveNoButton() {
     // 6. El texto de la pregunta NO se modifica.
 }
 
-// Inicializar el botón "No" en una posición fija (al lado del "Sí") al cargar la página
-window.onload = () => {
-    // Cambiamos la posición inicial del botón "No" de 'absolute' usando 'left' y 'top' en lugar de 'transform: translate' para un posicionamiento absoluto más limpio.
+
+// Función para inicializar el botón en una posición fija y visible
+function initializeButtonPosition() {
+    // 1. Asegurar que la posición sea fija para el movimiento en el viewport
     btnNo.style.position = 'fixed'; 
 
     const btnSiRect = document.getElementById('btnSi').getBoundingClientRect();
     
+    // Si el botón "Sí" no tiene dimensiones calculadas, usamos una posición de fallback visible.
+    if (btnSiRect.width === 0 || btnSiRect.height === 0) {
+        console.warn('El botón "Sí" aún no tiene dimensiones. Colocando el botón "No" en el centro para visibilidad de fallback.');
+        
+        // Fallback: Colocar el botón "No" en una posición garantizada (parte inferior central)
+        btnNo.style.left = '50%';
+        btnNo.style.top = '70%';
+        // Usamos translate(-50%, -50%) para centrarlo completamente cuando usamos % en left/top
+        btnNo.style.transform = `translate(-50%, -50%) scale(${noScale})`; 
+        
+        // Hacerlo visible antes de salir del fallback
+        btnNo.classList.remove('hidden');
+        return;
+    }
+    
+    // Lógica de cálculo original (si las dimensiones son válidas)
     // Calcular posición inicial justo a la derecha del botón "Sí"
     const initialX = btnSiRect.right + 20; // 20px a la derecha del botón "Sí"
     const initialY = btnSiRect.top; // A la misma altura que el botón "Sí"
@@ -94,8 +111,15 @@ window.onload = () => {
     btnNo.style.top = `${initialY}px`;
     btnNo.style.transform = `scale(${noScale})`; 
 
-    // Hacerlo visible 
+    // Hacerlo visible
     btnNo.classList.remove('hidden'); 
+}
+
+
+// Inicializar el botón cuando la ventana haya cargado completamente (incluyendo layout y recursos)
+window.onload = () => {
+    // Usamos un pequeño retraso para asegurar que todos los elementos CSS y el layout estén finalizados
+    setTimeout(initializeButtonPosition, 50); 
 };
 
 // Escuchar el evento de redimensionamiento de la ventana para recalcular la posición
